@@ -9,10 +9,18 @@ class Calendar extends Component {
 
     days = moment.weekdaysShort();
     months = moment.months();
+    years = (function() {
+        const years = [];
+        for (let i = moment().year() - 20; i < moment().year() + 20; i++) {
+            years.push(i);
+        }
+        return years;
+    })()
+
 
     getFirstDay = () => moment(this.state.momentInstance).startOf('month').format('d')
 
-    getBlankDays = () => {
+    getBlankDays = (monthDates) => {
         const blanks = [];
         const firstDay = this.getFirstDay();
         for(let i = 0; i<firstDay; i++) {
@@ -21,12 +29,14 @@ class Calendar extends Component {
         return blanks;
     }
 
+    
+
     getMonthDates = () => {
         const dates = [];
-        const today = this.state.momentInstance.date();
+        const today = this.state.momentInstance.format("D");
         const totalDaysInMonth = this.state.momentInstance.daysInMonth();
-        for (let i = 0; i < totalDaysInMonth; i++) {
-            dates.push(<td key={uuid.generate()} className={i === today ? 'active' : ''}>{i}</td>)
+        for (let i = 1; i <= totalDaysInMonth; i++) {
+            dates.push(<td key={uuid.generate()} className={i.toString() === today ? 'active' : ''}>{i}</td>)
         }
         return dates;
     }
@@ -41,16 +51,32 @@ class Calendar extends Component {
         return groupedDays;
     }
 
+    setMonth = (e) => {
+        const newInstance = moment({ ...this.state.momentInstance }).set('month', e.target.value);
+        this.setState({ momentInstance: newInstance});
+    }
+
+    setYear = (e) => {
+        const newInstance = moment({ ...this.state.momentInstance }).set('year', e.target.value);
+        this.setState({ momentInstance: newInstance });
+    }
+
     render() {
         const daysHeader = this.days.map((day, i) => <th key={i}>{day}</th>);
-        const blanks = this.getBlankDays();
-        const dates = this.getMonthDates();
-        const slots = this.groupDaysByWeeks([...blanks, ...dates]);
-
+        const monthDates = this.getMonthDates();
+        const blanks = this.getBlankDays(monthDates);
+        const slots = this.groupDaysByWeeks([...blanks, ...monthDates]);
         return (
             <div>
-                <select>
-                    {this.months.map((month) => <option key={uuid.generate()}>{month}</option>)}
+                <select value={this.state.momentInstance.month()} onChange={this.setMonth}>
+                    {this.months.map((month, i) => (
+                        <option value={i} key={i}>{month}</option>
+                    ))}
+                </select>
+                <select value={this.state.momentInstance.year()} onChange={this.setYear}>
+                    {this.years.map((year, i) => (
+                        <option value={year} key={i}>{year}</option>
+                    ))}
                 </select>
                 <table>
                     <thead className="calendar-header">

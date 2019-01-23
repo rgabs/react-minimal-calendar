@@ -4,7 +4,7 @@ import uuid from "short-uuid";
 import setQueryString from "set-query-string";
 import getQueryString from "query-string";
 import CalendarControls from "../CalendarControls";
-import "./Calendar.css";
+import CalendarPane from "../CalendarPane";
 
 class Calendar extends PureComponent {
   state = {
@@ -146,7 +146,6 @@ class Calendar extends PureComponent {
     moment(this.state.momentInstance).year() === this.years[0];
 
   render() {
-    const daysHeader = this.days.map((day, i) => <th key={i}>{day}</th>);
     const monthDates = this.getMonthDates();
     const overflowDays = this.getOverflowDays(monthDates);
     const slots = this.groupDaysByWeeks([...overflowDays, ...monthDates]);
@@ -165,12 +164,7 @@ class Calendar extends PureComponent {
           setNextMonth={this.setNextMonth}
           reset={this.reset}
         />
-        <table>
-          <thead className="calendar-header">
-            <tr className="calendar-row">{daysHeader}</tr>
-          </thead>
-          <tbody>{slots}</tbody>
-        </table>
+        <CalendarPane daysHeader={this.days} slots={slots} />
       </div>
     );
   }

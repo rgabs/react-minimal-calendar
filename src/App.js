@@ -17,11 +17,11 @@ class App extends Component {
             })
           }
         />
-        <p>
+        <b>
           <br />
           <br />
-          {this.state.selectedDate && this.state.selectedDate}
-        </p>
+          Selected date: {this.state.selectedDate ? this.state.selectedDate : 'Not selected'}
+        </b>
       </div>
     );
   }

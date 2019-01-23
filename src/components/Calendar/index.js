@@ -12,7 +12,7 @@ class Calendar extends PureComponent {
   };
 
   componentDidMount() {
-    const monthIndex = getQueryString.parse(location.search).month;
+    const monthIndex = getQueryString.parse(window.location.search).month;
     if (monthIndex) {
       this.setMonth(monthIndex);
     }
@@ -76,10 +76,8 @@ class Calendar extends PureComponent {
   };
 
   onDateSelect = dayOfMonth => () => {
-    const newInstance = moment({ ...this.state.momentInstance }).set(
-      "date",
-      dayOfMonth
-    );
+    const newInstance = moment({ ...this.state.momentInstance })
+      .set("date", dayOfMonth);
     this.setState({ momentInstance: newInstance });
     this.props.onChange(newInstance);
   };
@@ -104,10 +102,8 @@ class Calendar extends PureComponent {
   };
 
   setMonth = monthIndex => {
-    const newInstance = moment({ ...this.state.momentInstance }).set(
-      "month",
-      monthIndex
-    );
+    const newInstance = moment({ ...this.state.momentInstance })
+      .set("month", monthIndex);
     this.setState({ momentInstance: newInstance });
     setQueryString({ month: monthIndex });
   };
@@ -115,10 +111,8 @@ class Calendar extends PureComponent {
   onMonthChange = e => this.setMonth(e.target.value);
 
   setYear = e => {
-    const newInstance = moment({ ...this.state.momentInstance }).set(
-      "year",
-      e.target.value
-    );
+    const newInstance = moment({ ...this.state.momentInstance })
+      .set("year", e.target.value);
     this.setState({ momentInstance: newInstance });
   };
 
@@ -138,8 +132,7 @@ class Calendar extends PureComponent {
 
   isNextMonthBtnDisabled = () =>
     moment(this.state.momentInstance).month() === 11 &&
-    moment(this.state.momentInstance).year() ===
-      this.years[this.years.length - 1];
+    moment(this.state.momentInstance).year() === this.years[this.years.length - 1];
 
   isPrevMonthBtnDisabled = () =>
     moment(this.state.momentInstance).month() === 0 &&

@@ -1,11 +1,24 @@
-import React, { Component } from 'react';
-import Calendar from './components/Calendar';
+import React, { Component } from "react";
+import Calendar from "./components/Calendar";
 
 class App extends Component {
+  state = {
+    selectedDate: null
+  };
   render() {
     return (
       <div className="App">
-        <Calendar></Calendar>
+        <Calendar
+          onChange={momentInstance =>
+            this.setState({
+              selectedDate:
+                momentInstance && momentInstance.format("DD-MM-YYYY")
+            })
+          }
+        />
+        <br />
+        <br />
+        {this.state.selectedDate}
       </div>
     );
   }

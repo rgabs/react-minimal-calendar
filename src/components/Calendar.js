@@ -1,15 +1,17 @@
-import React, { Component} from 'react';
+import React, { PureComponent} from 'react';
 import moment from 'moment';
 import uuid from 'short-uuid';
+import './Calendar.css';
 
-class Calendar extends Component {
+class Calendar extends PureComponent {
     state = {
         momentInstance: moment()
     }
 
     days = moment.weekdaysShort();
     months = moment.months();
-    years = (function() {
+    
+    years = (() => {
         const years = [];
         for (let i = moment().year() - 20; i < moment().year() + 20; i++) {
             years.push(i);
@@ -17,19 +19,16 @@ class Calendar extends Component {
         return years;
     })()
 
-
-    getFirstDay = () => moment(this.state.momentInstance).startOf('month').format('d')
-
-    getBlankDays = (monthDates) => {
+    getOverflowDays = () => {
         const blanks = [];
-        const firstDay = this.getFirstDay();
-        for(let i = 0; i<firstDay; i++) {
-            blanks.push(<td key={uuid.generate()}></td>)
+        const firstDay = moment(this.state.momentInstance).startOf('month').format('d');
+        let daysInPreviousMonth = moment(this.state.momentInstance).subtract(1, 'months').daysInMonth()
+        for (let i = firstDay - 1; i>=0; i--) {
+            blanks.push(<td className="overflow-days" key={uuid.generate()}>{daysInPreviousMonth - i}</td>)
         }
         return blanks;
     }
 
-    
 
     getMonthDates = () => {
         const dates = [];
@@ -42,10 +41,14 @@ class Calendar extends Component {
     }
 
     groupDaysByWeeks = (allDays) => {
-        const numOfWeeks = Math.ceil(allDays.length / 7);
+        const overflowedDays = [...allDays];
+        for (let j = 1; j <= 35 - allDays.length; j++) {
+            overflowedDays.push(<td className="overflow-days" key={uuid.generate()}>{j}</td>)
+        }
+        const numOfWeeks = Math.ceil(overflowedDays.length / 7);
         const groupedDays = [];
         for (let i = 0; i < numOfWeeks; i++) {
-            const daysInWeek = allDays.slice(i * 7, ((i + 1) * 7));
+            const daysInWeek = overflowedDays.slice(i * 7, ((i + 1) * 7));
             groupedDays.push(<tr key={uuid.generate()}>{daysInWeek}</tr>);
         }
         return groupedDays;
@@ -61,13 +64,34 @@ class Calendar extends Component {
         this.setState({ momentInstance: newInstance });
     }
 
+    setPreviousMonth = () => {
+        const newInstance = moment({ ...this.state.momentInstance }).subtract(1, 'months');
+        this.setState({ momentInstance: newInstance });
+    }
+
+    setNextMonth = () => {
+        const newInstance = moment({ ...this.state.momentInstance }).add(1, 'months');
+        this.setState({ momentInstance: newInstance });
+    }
+    
+    isNextMonthBtnDisabled = () => (
+        moment(this.state.momentInstance).month() === 11 && 
+        moment(this.state.momentInstance).year() === this.years[this.years.length - 1]
+    )
+
+    isPrevMonthBtnDisabled = () => (
+        moment(this.state.momentInstance).month() === 0 &&
+        moment(this.state.momentInstance).year() === this.years[0]
+    )
+
     render() {
         const daysHeader = this.days.map((day, i) => <th key={i}>{day}</th>);
         const monthDates = this.getMonthDates();
-        const blanks = this.getBlankDays(monthDates);
-        const slots = this.groupDaysByWeeks([...blanks, ...monthDates]);
+        const overflowDays = this.getOverflowDays(monthDates);
+        const slots = this.groupDaysByWeeks([...overflowDays, ...monthDates]);
         return (
             <div>
+                <button disabled={this.isPrevMonthBtnDisabled()} onClick={this.setPreviousMonth}>{'<'}</button>
                 <select value={this.state.momentInstance.month()} onChange={this.setMonth}>
                     {this.months.map((month, i) => (
                         <option value={i} key={i}>{month}</option>
@@ -78,6 +102,7 @@ class Calendar extends Component {
                         <option value={year} key={i}>{year}</option>
                     ))}
                 </select>
+                <button disabled={this.isNextMonthBtnDisabled()} onClick={this.setNextMonth}>{'>'}</button>
                 <table>
                     <thead className="calendar-header">
                         <tr className="calendar-row">

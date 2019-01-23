@@ -1,18 +1,29 @@
 import React, { PureComponent } from "react";
 import moment from "moment";
 import uuid from "short-uuid";
-import "./Calendar.css";
+import setQueryString from "set-query-string";
+import getQueryString from "query-string";
+import CalendarControls from "../CalendarControls";
+import CalendarPane from "../CalendarPane";
 
 class Calendar extends PureComponent {
   state = {
     momentInstance: moment()
   };
 
+  componentDidMount() {
+    const monthIndex = getQueryString.parse(location.search).month;
+    if (monthIndex) {
+      this.setMonth(monthIndex);
+    }
+  }
+
   days = moment.weekdaysShort();
   months = moment.months();
 
   reset = () => {
     this.setState({ momentInstance: moment() });
+    setQueryString({ month: "" });
     this.props.onChange(null);
   };
 
@@ -92,13 +103,16 @@ class Calendar extends PureComponent {
     return groupedDays;
   };
 
-  setMonth = e => {
+  setMonth = monthIndex => {
     const newInstance = moment({ ...this.state.momentInstance }).set(
       "month",
-      e.target.value
+      monthIndex
     );
     this.setState({ momentInstance: newInstance });
+    setQueryString({ month: monthIndex });
   };
+
+  onMonthChange = e => this.setMonth(e.target.value);
 
   setYear = e => {
     const newInstance = moment({ ...this.state.momentInstance }).set(
@@ -109,20 +123,17 @@ class Calendar extends PureComponent {
   };
 
   setPreviousMonth = () => {
-    const newInstance = moment({ ...this.state.momentInstance }).subtract(
-      1,
-      "months"
-    );
-    this.setState({ momentInstance: newInstance });
-    alert(newInstance.format());
+    const prevMonthIndex = moment({ ...this.state.momentInstance })
+      .subtract(1, "months")
+      .month();
+    this.setMonth(prevMonthIndex);
   };
 
   setNextMonth = () => {
-    const newInstance = moment({ ...this.state.momentInstance }).add(
-      1,
-      "months"
-    );
-    this.setState({ momentInstance: newInstance });
+    const nextMonthIndex = moment({ ...this.state.momentInstance })
+      .add(1, "months")
+      .month();
+    this.setMonth(nextMonthIndex);
   };
 
   isNextMonthBtnDisabled = () =>
@@ -135,51 +146,25 @@ class Calendar extends PureComponent {
     moment(this.state.momentInstance).year() === this.years[0];
 
   render() {
-    const daysHeader = this.days.map((day, i) => <th key={i}>{day}</th>);
     const monthDates = this.getMonthDates();
     const overflowDays = this.getOverflowDays(monthDates);
     const slots = this.groupDaysByWeeks([...overflowDays, ...monthDates]);
     return (
       <div>
-        <button
-          disabled={this.isPrevMonthBtnDisabled()}
-          onClick={this.setPreviousMonth}
-        >
-          {"<"}
-        </button>
-        <select
-          value={this.state.momentInstance.month()}
-          onChange={this.setMonth}
-        >
-          {this.months.map((month, i) => (
-            <option value={i} key={i}>
-              {month}
-            </option>
-          ))}
-        </select>
-        <select
-          value={this.state.momentInstance.year()}
-          onChange={this.setYear}
-        >
-          {this.years.map((year, i) => (
-            <option value={year} key={i}>
-              {year}
-            </option>
-          ))}
-        </select>
-        <button
-          disabled={this.isNextMonthBtnDisabled()}
-          onClick={this.setNextMonth}
-        >
-          {">"}
-        </button>
-        <button onClick={this.reset}>Reset</button>
-        <table>
-          <thead className="calendar-header">
-            <tr className="calendar-row">{daysHeader}</tr>
-          </thead>
-          <tbody>{slots}</tbody>
-        </table>
+        <CalendarControls
+          isPrevMonthBtnDisabled={this.isPrevMonthBtnDisabled()}
+          setPreviousMonth={this.setPreviousMonth}
+          month={this.state.momentInstance.month()}
+          months={this.months}
+          onMonthChange={this.onMonthChange}
+          year={this.state.momentInstance.year()}
+          onYearChange={this.setYear}
+          years={this.years}
+          isNextMonthBtnDisabled={this.isNextMonthBtnDisabled()}
+          setNextMonth={this.setNextMonth}
+          reset={this.reset}
+        />
+        <CalendarPane daysHeader={this.days} slots={slots} />
       </div>
     );
   }

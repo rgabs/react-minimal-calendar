@@ -11,6 +11,11 @@ class Calendar extends PureComponent {
   days = moment.weekdaysShort();
   months = moment.months();
 
+  reset = () => {
+    this.setState({ momentInstance: moment() });
+    this.props.onChange(null);
+  };
+
   years = (() => {
     const years = [];
     for (let i = moment().year() - 20; i < moment().year() + 20; i++) {
@@ -37,17 +42,21 @@ class Calendar extends PureComponent {
     return blanks;
   };
 
+  isToday = dayOfMonth =>
+    moment().isSame(this.state.momentInstance, "year") &&
+    moment().isSame(this.state.momentInstance, "month") &&
+    dayOfMonth === moment().date();
+
   getMonthDates = () => {
     const dates = [];
-    const isToday = dayOfMonth =>
-      moment().isSame(this.state.momentInstance, "year") &&
-      moment().isSame(this.state.momentInstance, "month") &&
-      dayOfMonth === this.state.momentInstance.date();
-
     const totalDaysInMonth = this.state.momentInstance.daysInMonth();
     for (let i = 1; i <= totalDaysInMonth; i++) {
       dates.push(
-        <td key={uuid.generate()} className={isToday(i) ? "date-active" : ""}>
+        <td
+          key={uuid.generate()}
+          onClick={this.onDateSelect(i)}
+          className={this.isToday(i) ? "date-active" : ""}
+        >
           {i}
         </td>
       );
@@ -55,8 +64,18 @@ class Calendar extends PureComponent {
     return dates;
   };
 
+  onDateSelect = dayOfMonth => () => {
+    const newInstance = moment({ ...this.state.momentInstance }).set(
+      "date",
+      dayOfMonth
+    );
+    this.setState({ momentInstance: newInstance });
+    this.props.onChange(newInstance);
+  };
+
   groupDaysByWeeks = allDays => {
     const overflowedDays = [...allDays];
+    const groupedDays = [];
     const totalRequiredSlots = Math.ceil(allDays.length / 7) * 7;
     for (let j = 1; j <= totalRequiredSlots - allDays.length; j++) {
       overflowedDays.push(
@@ -66,7 +85,6 @@ class Calendar extends PureComponent {
       );
     }
     const numOfWeeks = Math.ceil(overflowedDays.length / 7);
-    const groupedDays = [];
     for (let i = 0; i < numOfWeeks; i++) {
       const daysInWeek = overflowedDays.slice(i * 7, (i + 1) * 7);
       groupedDays.push(<tr key={uuid.generate()}>{daysInWeek}</tr>);
@@ -96,6 +114,7 @@ class Calendar extends PureComponent {
       "months"
     );
     this.setState({ momentInstance: newInstance });
+    alert(newInstance.format());
   };
 
   setNextMonth = () => {
@@ -154,6 +173,7 @@ class Calendar extends PureComponent {
         >
           {">"}
         </button>
+        <button onClick={this.reset}>Reset</button>
         <table>
           <thead className="calendar-header">
             <tr className="calendar-row">{daysHeader}</tr>
@@ -164,5 +184,9 @@ class Calendar extends PureComponent {
     );
   }
 }
+
+Calendar.propTypes = {
+  onChange: () => {}
+};
 
 export default Calendar;

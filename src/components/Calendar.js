@@ -32,10 +32,15 @@ class Calendar extends PureComponent {
 
     getMonthDates = () => {
         const dates = [];
-        const today = this.state.momentInstance.format("D");
+        const isToday = (dayOfMonth) => (
+            moment().isSame(this.state.momentInstance, 'year') &&
+            moment().isSame(this.state.momentInstance, 'month') &&
+            dayOfMonth === this.state.momentInstance.date()
+        );
+        
         const totalDaysInMonth = this.state.momentInstance.daysInMonth();
         for (let i = 1; i <= totalDaysInMonth; i++) {
-            dates.push(<td key={uuid.generate()} className={i.toString() === today ? 'active' : ''}>{i}</td>)
+            dates.push(<td key={uuid.generate()} className={isToday(i) ? 'date-active' : ''}>{i}</td>)
         }
         return dates;
     }

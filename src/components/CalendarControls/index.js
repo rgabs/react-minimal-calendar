@@ -1,4 +1,5 @@
 import React from "react";
+import "./CalendarControls.css";
 
 const CalendarControls = ({
   isPrevMonthBtnDisabled,
@@ -14,8 +15,12 @@ const CalendarControls = ({
   reset
 }) => {
   return (
-    <div>
-      <button disabled={isPrevMonthBtnDisabled} onClick={setPreviousMonth}>
+    <div className="calendar-control">
+      <button
+        className="calendar-control__month-arrow"
+        disabled={isPrevMonthBtnDisabled}
+        onClick={setPreviousMonth}
+      >
         {"<"}
       </button>
       <select value={month} onChange={onMonthChange}>
@@ -32,7 +37,11 @@ const CalendarControls = ({
           </option>
         ))}
       </select>
-      <button disabled={isNextMonthBtnDisabled} onClick={setNextMonth}>
+      <button
+        className="calendar-control__month-arrow"
+        disabled={isNextMonthBtnDisabled}
+        onClick={setNextMonth}
+      >
         {">"}
       </button>
       <button onClick={reset}>Reset</button>

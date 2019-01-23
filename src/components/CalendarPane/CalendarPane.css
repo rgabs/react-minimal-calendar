@@ -1,11 +1,24 @@
 .overflow-days {
-    opacity: 0.3;
+  opacity: 0.3;
 }
 
 .date-active {
-    background-color: aquamarine;
+  background-color: aquamarine;
 }
 
-td, th {
-    text-align: center;
+.calendar-pane td,
+th {
+  text-align: center;
+}
+
+.calendar-pane td {
+  padding: 10px;
+  border-radius: 2px;
+}
+
+.calendar-pane__body td:hover,
+.calendar-pane__body td:active {
+  background-color: lightgrey;
+  cursor: pointer;
+  transition: background-color 0.3s;
 }

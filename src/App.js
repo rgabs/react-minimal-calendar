@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import Calendar from "./components/Calendar";
+import "./App.css";
 
 class App extends Component {
   state = {
@@ -7,7 +8,7 @@ class App extends Component {
   };
   render() {
     return (
-      <div className="App">
+      <div className="app">
         <Calendar
           onChange={momentInstance =>
             this.setState({
@@ -16,9 +17,11 @@ class App extends Component {
             })
           }
         />
-        <br />
-        <br />
-        {this.state.selectedDate}
+        <p>
+          <br />
+          <br />
+          {this.state.selectedDate && this.state.selectedDate}
+        </p>
       </div>
     );
   }

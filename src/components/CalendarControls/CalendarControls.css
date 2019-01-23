@@ -1,0 +1,9 @@
+.calendar-control {
+  display: flex;
+  justify-content: center;
+  padding: 20px;
+}
+
+.calendar-control .calendar-control__month-arrow {
+  margin: 0 2px;
+}

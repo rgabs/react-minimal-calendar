@@ -2,15 +2,15 @@ import React from "react";
 import "./CalendarPane.css";
 
 const CalendarPane = ({ daysHeader, slots }) => (
-  <table>
-    <thead className="calendar-header">
-      <tr className="calendar-row">
+  <table className="calendar-pane">
+    <thead className="calendar-pane__header">
+      <tr>
         {daysHeader.map((day, i) => (
           <th key={i}>{day}</th>
         ))}
       </tr>
     </thead>
-    <tbody>{slots}</tbody>
+    <tbody className="calendar-pane__body">{slots}</tbody>
   </table>
 );
 

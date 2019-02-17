@@ -4,26 +4,26 @@ import "./App.css";
 
 class App extends Component {
   state = {
-    selectedDate: null
+      selectedDate: null
   };
   render() {
-    return (
-      <div className="app">
-        <Calendar
-          onChange={momentInstance =>
-            this.setState({
-              selectedDate:
+      return (
+          <div className="app">
+              <Calendar
+                  onChange={momentInstance =>
+                      this.setState({
+                          selectedDate:
                 momentInstance && momentInstance.format("DD-MM-YYYY")
-            })
-          }
-        />
-        <b>
-          <br />
-          <br />
+                      })
+                  }
+              />
+              <b>
+                  <br />
+                  <br />
           Selected date: {this.state.selectedDate ? this.state.selectedDate : 'Not selected'}
-        </b>
-      </div>
-    );
+              </b>
+          </div>
+      );
   }
 }
 

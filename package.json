@@ -4,7 +4,9 @@
   "homepage": "./",
   "private": true,
   "dependencies": {
+    "eslint-config-airbnb": "^17.1.0",
     "moment": "^2.24.0",
+    "query-string": "^6.2.0",
     "querystring": "0.2.0",
     "react": "^16.7.0",
     "react-dom": "^16.7.0",
